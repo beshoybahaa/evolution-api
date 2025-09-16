@@ -1,4 +1,4 @@
-FROM node:20-alpine AS builder
+FROM node:20-slim AS builder
 
 RUN apk update && \
     apk add --no-cache git ffmpeg wget curl bash openssl
@@ -13,7 +13,7 @@ COPY ./package*.json ./
 COPY ./tsconfig.json ./
 COPY ./tsup.config.ts ./
 
-RUN npm ci --silent
+RUN npm install --legacy-peer-deps --silent
 
 COPY ./src ./src
 COPY ./public ./public
@@ -30,7 +30,7 @@ RUN ./Docker/scripts/generate_database.sh
 
 RUN npm run build
 
-FROM node:20-alpine AS final
+FROM node:20-slim AS final
 
 RUN apk update && \
     apk add tzdata ffmpeg bash openssl
@@ -52,6 +52,9 @@ COPY --from=builder /evolution/.env ./.env
 COPY --from=builder /evolution/Docker ./Docker
 COPY --from=builder /evolution/runWithProvider.js ./runWithProvider.js
 COPY --from=builder /evolution/tsup.config.ts ./tsup.config.ts
+
+# Copy built app from builder
+COPY --from=builder /evolution ./
 
 ENV DOCKER_ENV=true
 
