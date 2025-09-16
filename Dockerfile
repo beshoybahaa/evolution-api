@@ -1,8 +1,19 @@
 FROM node:20-slim AS builder
 
 RUN apt-get update && \
-    apt-get install -y git ffmpeg wget curl bash openssl dos2unix python3 make g++ && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get install -y \
+      git \
+      ffmpeg \
+      wget \
+      curl \
+      bash \
+      openssl \
+      dos2unix \
+      python3 \
+      make \
+      g++ \
+      build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
 LABEL version="2.3.1" description="Api to control whatsapp features through http requests." 
 LABEL maintainer="Davidson Gomes" git="https://github.com/DavidsonGomes"
